@@ -66,6 +66,9 @@ ifeq ($(WARNERROR), yes)
 CFLAGS += -Werror
 endif
 
+# Set Include Directories for chips, programmers, and libraries
+CPPFLAGS += -I. -Ichips -Iprogrammers -Ilibraries
+
 ###############################################################################
 # General OS-specific settings.
 # 1. Prepare for later by gathering information about host and target OS
@@ -350,15 +353,31 @@ endif
 ###############################################################################
 # Flash chip drivers and bus support infrastructure.
 
-CHIP_OBJS = jedec.o stm50.o w39.o w29ee011.o \
-	sst28sf040.o 82802ab.o \
-	sst49lfxxxc.o sst_fwhub.o flashchips.o spi.o spi25.o spi25_statusreg.o \
-	opaque.o sfdp.o en29lv640b.o at45db.o
+CHIP_OBJS += chips/jedec.o
+CHIP_OBJS += chips/stm50.o
+CHIP_OBJS += chips/w39.o
+CHIP_OBJS += chips/w29ee011.o
+CHIP_OBJS += chips/sst28sf040.o
+CHIP_OBJS += chips/82802ab.o
+CHIP_OBJS += chips/sst49lfxxxc.o
+CHIP_OBJS += chips/sst_fwhub.o
+CHIP_OBJS += chips/flashchips.o
+CHIP_OBJS += chips/spi.o
+CHIP_OBJS += chips/spi25.o
+CHIP_OBJS += chips/spi25_statusreg.o
+CHIP_OBJS += chips/opaque.o
+CHIP_OBJS += chips/sfdp.o
+CHIP_OBJS += chips/en29lv640b.o
+CHIP_OBJS += chips/at45db.o
 
 ###############################################################################
 # Library code.
 
-LIB_OBJS = layout.o flashrom.o udelay.o programmer.o helpers.o
+LIB_OBJS += libraries/layout.o
+LIB_OBJS += libraries/flashrom.o
+LIB_OBJS += libraries/udelay.o
+LIB_OBJS += libraries/programmer.o
+LIB_OBJS += libraries/helpers.o
 
 ###############################################################################
 # Frontend related stuff.
@@ -504,10 +523,21 @@ FEATURE_CFLAGS += -D'CONFIG_DEFAULT_PROGRAMMER_ARGS="$(CONFIG_DEFAULT_PROGRAMMER
 
 ifeq ($(CONFIG_INTERNAL), yes)
 FEATURE_CFLAGS += -D'CONFIG_INTERNAL=1'
-PROGRAMMER_OBJS += processor_enable.o chipset_enable.o board_enable.o cbtable.o internal.o
+PROGRAMMER_OBJS += programmers/processor_enable.o
+PROGRAMMER_OBJS += programmers/chipset_enable.o
+PROGRAMMER_OBJS += programmers/board_enable.o
+PROGRAMMER_OBJS += programmers/cbtable.o
+PROGRAMMER_OBJS += programmers/internal.o
 ifeq ($(ARCH), x86)
-PROGRAMMER_OBJS += it87spi.o it85spi.o sb600spi.o amd_imc.o wbsio_spi.o mcp6x_spi.o
-PROGRAMMER_OBJS += ichspi.o ich_descriptors.o dmi.o
+PROGRAMMER_OBJS += programmers/it87spi.o
+PROGRAMMER_OBJS += programmers/it85spi.o
+PROGRAMMER_OBJS += programmers/sb600spi.o
+PROGRAMMER_OBJS += programmers/amd_imc.o
+PROGRAMMER_OBJS += programmers/wbsio_spi.o
+PROGRAMMER_OBJS += programmers/mcp6x_spi.o
+PROGRAMMER_OBJS += programmers/ichspi.o
+PROGRAMMER_OBJS += programmers/ich_descriptors.o
+PROGRAMMER_OBJS += programmers/dmi.o
 ifeq ($(CONFIG_INTERNAL_DMI), yes)
 FEATURE_CFLAGS += -D'CONFIG_INTERNAL_DMI=1'
 endif
@@ -518,62 +548,62 @@ endif
 
 ifeq ($(CONFIG_SERPROG), yes)
 FEATURE_CFLAGS += -D'CONFIG_SERPROG=1'
-PROGRAMMER_OBJS += serprog.o
+PROGRAMMER_OBJS += programmers/serprog.o
 NEED_SERIAL := yes
 NEED_NET := yes
 endif
 
 ifeq ($(CONFIG_RAYER_SPI), yes)
 FEATURE_CFLAGS += -D'CONFIG_RAYER_SPI=1'
-PROGRAMMER_OBJS += rayer_spi.o
+PROGRAMMER_OBJS += programmers/rayer_spi.o
 # Actually, NEED_PCI is wrong. NEED_IOPORT_ACCESS would be more correct.
 NEED_PCI := yes
 endif
 
 ifeq ($(CONFIG_PONY_SPI), yes)
 FEATURE_CFLAGS += -D'CONFIG_PONY_SPI=1'
-PROGRAMMER_OBJS += pony_spi.o
+PROGRAMMER_OBJS += programmers/pony_spi.o
 NEED_SERIAL := yes
 endif
 
 ifeq ($(CONFIG_BITBANG_SPI), yes)
 FEATURE_CFLAGS += -D'CONFIG_BITBANG_SPI=1'
-PROGRAMMER_OBJS += bitbang_spi.o
+PROGRAMMER_OBJS += programmers/bitbang_spi.o
 endif
 
 ifeq ($(CONFIG_NIC3COM), yes)
 FEATURE_CFLAGS += -D'CONFIG_NIC3COM=1'
-PROGRAMMER_OBJS += nic3com.o
+PROGRAMMER_OBJS += programmers/nic3com.o
 NEED_PCI := yes
 endif
 
 ifeq ($(CONFIG_GFXNVIDIA), yes)
 FEATURE_CFLAGS += -D'CONFIG_GFXNVIDIA=1'
-PROGRAMMER_OBJS += gfxnvidia.o
+PROGRAMMER_OBJS += programmers/gfxnvidia.o
 NEED_PCI := yes
 endif
 
 ifeq ($(CONFIG_SATASII), yes)
 FEATURE_CFLAGS += -D'CONFIG_SATASII=1'
-PROGRAMMER_OBJS += satasii.o
+PROGRAMMER_OBJS += programmers/satasii.o
 NEED_PCI := yes
 endif
 
 ifeq ($(CONFIG_ATAHPT), yes)
 FEATURE_CFLAGS += -D'CONFIG_ATAHPT=1'
-PROGRAMMER_OBJS += atahpt.o
+PROGRAMMER_OBJS += programmers/atahpt.o
 NEED_PCI := yes
 endif
 
 ifeq ($(CONFIG_ATAVIA), yes)
 FEATURE_CFLAGS += -D'CONFIG_ATAVIA=1'
-PROGRAMMER_OBJS += atavia.o
+PROGRAMMER_OBJS += programmers/atavia.o
 NEED_PCI := yes
 endif
 
 ifeq ($(CONFIG_IT8212), yes)
 FEATURE_CFLAGS += -D'CONFIG_IT8212=1'
-PROGRAMMER_OBJS += it8212.o
+PROGRAMMER_OBJS += programmers/it8212.o
 NEED_PCI := yes
 endif
 
@@ -581,14 +611,14 @@ ifeq ($(CONFIG_FT2232_SPI), yes)
 # This is a totally ugly hack.
 FEATURE_CFLAGS += $(shell LC_ALL=C grep -q "FTDISUPPORT := yes" .features && printf "%s" "-D'CONFIG_FT2232_SPI=1'")
 NEED_FTDI := yes
-PROGRAMMER_OBJS += ft2232_spi.o
+PROGRAMMER_OBJS += programmers/ft2232_spi.o
 endif
 
 ifeq ($(CONFIG_USBBLASTER_SPI), yes)
 # This is a totally ugly hack.
 FEATURE_CFLAGS += $(shell LC_ALL=C grep -q "FTDISUPPORT := yes" .features && printf "%s" "-D'CONFIG_USBBLASTER_SPI=1'")
 NEED_FTDI := yes
-PROGRAMMER_OBJS += usbblaster_spi.o
+PROGRAMMER_OBJS += programmers/usbblaster_spi.o
 endif
 
 ifeq ($(NEED_FTDI), yes)
@@ -601,77 +631,77 @@ endif
 
 ifeq ($(CONFIG_DUMMY), yes)
 FEATURE_CFLAGS += -D'CONFIG_DUMMY=1'
-PROGRAMMER_OBJS += dummyflasher.o
+PROGRAMMER_OBJS += programmers/dummyflasher.o
 endif
 
 ifeq ($(CONFIG_DRKAISER), yes)
 FEATURE_CFLAGS += -D'CONFIG_DRKAISER=1'
-PROGRAMMER_OBJS += drkaiser.o
+PROGRAMMER_OBJS += programmers/drkaiser.o
 NEED_PCI := yes
 endif
 
 ifeq ($(CONFIG_NICREALTEK), yes)
 FEATURE_CFLAGS += -D'CONFIG_NICREALTEK=1'
-PROGRAMMER_OBJS += nicrealtek.o
+PROGRAMMER_OBJS += programmers/nicrealtek.o
 NEED_PCI := yes
 endif
 
 ifeq ($(CONFIG_NICNATSEMI), yes)
 FEATURE_CFLAGS += -D'CONFIG_NICNATSEMI=1'
-PROGRAMMER_OBJS += nicnatsemi.o
+PROGRAMMER_OBJS += programmers/nicnatsemi.o
 NEED_PCI := yes
 endif
 
 ifeq ($(CONFIG_NICINTEL), yes)
 FEATURE_CFLAGS += -D'CONFIG_NICINTEL=1'
-PROGRAMMER_OBJS += nicintel.o
+PROGRAMMER_OBJS += programmers/nicintel.o
 NEED_PCI := yes
 endif
 
 ifeq ($(CONFIG_NICINTEL_SPI), yes)
 FEATURE_CFLAGS += -D'CONFIG_NICINTEL_SPI=1'
-PROGRAMMER_OBJS += nicintel_spi.o
+PROGRAMMER_OBJS += programmers/nicintel_spi.o
 NEED_PCI := yes
 endif
 
 ifeq ($(CONFIG_NICINTEL_EEPROM), yes)
 FEATURE_CFLAGS += -D'CONFIG_NICINTEL_EEPROM=1'
-PROGRAMMER_OBJS += nicintel_eeprom.o
+PROGRAMMER_OBJS += programmers/nicintel_eeprom.o
 NEED_PCI := yes
 endif
 
 ifeq ($(CONFIG_OGP_SPI), yes)
 FEATURE_CFLAGS += -D'CONFIG_OGP_SPI=1'
-PROGRAMMER_OBJS += ogp_spi.o
+PROGRAMMER_OBJS += programmers/ogp_spi.o
 NEED_PCI := yes
 endif
 
 ifeq ($(CONFIG_BUSPIRATE_SPI), yes)
 FEATURE_CFLAGS += -D'CONFIG_BUSPIRATE_SPI=1'
-PROGRAMMER_OBJS += buspirate_spi.o
+PROGRAMMER_OBJS += programmers/buspirate_spi.o
 NEED_SERIAL := yes
 endif
 
 ifeq ($(CONFIG_DEDIPROG), yes)
 FEATURE_CFLAGS += -D'CONFIG_DEDIPROG=1'
-PROGRAMMER_OBJS += dediprog.o
+PROGRAMMER_OBJS += programmers/dediprog.o
 NEED_USB := yes
 endif
 
 ifeq ($(CONFIG_SATAMV), yes)
 FEATURE_CFLAGS += -D'CONFIG_SATAMV=1'
-PROGRAMMER_OBJS += satamv.o
+PROGRAMMER_OBJS += programmers/satamv.o
 NEED_PCI := yes
 endif
 
 ifeq ($(CONFIG_LINUX_SPI), yes)
 # This is a totally ugly hack.
 FEATURE_CFLAGS += $(shell LC_ALL=C grep -q "LINUX_SPI_SUPPORT := yes" .features && printf "%s" "-D'CONFIG_LINUX_SPI=1'")
-PROGRAMMER_OBJS += linux_spi.o
+PROGRAMMER_OBJS += programmers/linux_spi.o
 endif
 
 ifeq ($(NEED_SERIAL), yes)
-LIB_OBJS += serial.o
+LIB_OBJS += libraries/serial.o
 endif
 
 ifeq ($(NEED_NET), yes)
@@ -683,7 +713,9 @@ endif
 ifeq ($(NEED_PCI), yes)
 CHECK_LIBPCI = yes
 FEATURE_CFLAGS += -D'NEED_PCI=1'
-PROGRAMMER_OBJS += pcidev.o physmap.o hwaccess.o
+PROGRAMMER_OBJS += programmers/pcidev.o
+PROGRAMMER_OBJS += programmers/physmap.o
+PROGRAMMER_OBJS += programmers/hwaccess.o
 ifeq ($(TARGET_OS), NetBSD)
 # The libpci we want is called libpciutils on NetBSD and needs NetBSD libpci.
 PCILIBS += -lpciutils -lpci
@@ -753,7 +785,8 @@ TAROPTIONS = $(shell LC_ALL=C tar --version|grep -q GNU && echo "--owner=root --
 # This includes all frontends and libflashrom.
 # We don't use EXEC_SUFFIX here because we want to clean everything.
 clean:
-	rm -f $(PROGRAM) $(PROGRAM).exe libflashrom.a *.o *.d $(PROGRAM).8
+	rm -f $(PROGRAM) $(PROGRAM).exe libflashrom.a $(PROGRAM).8
+	rm -f *.o *.d chips/*.o chips/*.d libraries/*.o libraries/*.d programmers/*.o programmers/*.d
 	@+$(MAKE) -C util/ich_descriptors_tool/ clean
 
 distclean: clean
@@ -834,13 +867,13 @@ hwlibs: compiler
 ifeq ($(CHECK_LIBPCI), yes)
 	@printf "Checking for libpci headers... "
 	@echo "$$LIBPCI_TEST" > .test.c
-	@$(CC) -c $(CPPFLAGS) $(CFLAGS) .test.c -o .test.o >/dev/null &&		\
+	@$(CC) -c $(CPPFLAGS) $(CFLAGS) .test.c -o .test.o >/dev/null 2>&1 &&		\
 		echo "found." || ( echo "not found."; echo;			\
 		echo "Please install libpci headers (package pciutils-devel).";	\
 		echo "See README for more information."; echo;			\
 		rm -f .test.c .test.o; exit 1)
 	@printf "Checking if libpci is present and sufficient... "
-	@$(CC) $(LDFLAGS) .test.o -o .test$(EXEC_SUFFIX) $(LIBS) $(PCILIBS) >/dev/null &&		\
+	@$(CC) $(LDFLAGS) .test.o -o .test$(EXEC_SUFFIX) $(LIBS) $(PCILIBS) >/dev/null 2>&1 &&		\
 		echo "yes." || ( echo "no.";							\
 		printf "Checking if libz+libpci are present and sufficient...";	\
 		$(CC) $(LDFLAGS) .test.o -o .test$(EXEC_SUFFIX) $(LIBS) $(PCILIBS) -lz >/dev/null &&	\

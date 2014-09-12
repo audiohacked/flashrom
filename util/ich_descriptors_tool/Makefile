@@ -9,7 +9,7 @@ EXTRAINCDIRS = ../../ .
 DEPPATH = .dep
 OBJATH = .obj
 SHAREDSRC = ich_descriptors.c
-SHAREDSRCDIR = ../..
+SHAREDSRCDIR = ../../programmers
 # If your compiler spits out excessive warnings, run make WARNERROR=no
 # You shouldn't have to change this flag.
 WARNERROR ?= yes
@@ -20,7 +20,7 @@ CC ?= gcc
 
 # If the user has specified custom CFLAGS, all CFLAGS settings below will be
 # completely ignored by gnumake.
-CFLAGS ?= -Os -Wall -Wshadow
+CFLAGS ?= -Os -Wall -Wshadow -I../../programmers -I../../libraries
 ifeq ($(TARGET_OS), DOS)
 # DJGPP has odd uint*_t definitions which cause lots of format string warnings.
 CFLAGS += -Wno-format
